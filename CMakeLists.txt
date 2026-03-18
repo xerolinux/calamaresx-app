@@ -170,11 +170,11 @@ set(CALAMARES_DESCRIPTION_SUMMARY "The distribution-independent installer framew
 #
 # Total 82 languages
 set( _tx_complete ar az ca cs_CZ de en es es_AR fi_FI fr he hu id
-    ja kk ko nb pl pt_BR ru sv tg tr_TR uk zh_CN zh_TW )  # 27 languages
+    ja kk ko lg nb pl pt_BR ru sv tg tr_TR uk zh_CN zh_TW )  # 27 languages
 set( _tx_good az_AZ bg fur hr is it_IT ka lt pt_PT sk sq uz )  # 12 languages
 set( _tx_ok as ast be bn ca@valencia da el en_GB eo es_MX et eu fa
     gl hi ia ml mr nl oc ro si sl sr sr@latin th vi )  # 27 languages
-set( _tx_incomplete es_PR gu ie ja-Hira kn lo lv mk ne_NP
+set( _tx_incomplete bs es_PR fr_CA gu ie ja-Hira kn lo lv mk ne_NP
     ta_IN te ur zh zh_HK )  # 16 languages
 # Total 82 languages
 
