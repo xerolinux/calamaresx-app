@@ -765,6 +765,7 @@ def run():
         return None
 
     update_db = libcalamares.job.configuration.get("update_db", False)
+    ignore_update_db_error = libcalamares.job.configuration.get("ignore_update_db_error", False)
     if update_db and libcalamares.globalstorage.value("hasInternet"):
         try:
             pkgman.update_db()
@@ -772,9 +773,12 @@ def run():
             libcalamares.utils.warning(str(e))
             libcalamares.utils.debug("stdout:" + str(e.stdout))
             libcalamares.utils.debug("stderr:" + str(e.stderr))
-            return (_("Package Manager error"),
-                    _("The package manager could not prepare updates. The command <pre>{!s}</pre> returned error code {!s}.")
-                    .format(e.cmd, e.returncode))
+            if ignore_update_db_error:
+                libcalamares.utils.warning("Package database update failed, ignoring (ignore_update_db_error is set)")
+            else:
+                return (_("Package Manager error"),
+                        _("The package manager could not prepare updates. The command <pre>{!s}</pre> returned error code {!s}.")
+                        .format(e.cmd, e.returncode))
 
     update_system = libcalamares.job.configuration.get("update_system", False)
     if update_system and libcalamares.globalstorage.value("hasInternet"):
