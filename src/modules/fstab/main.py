@@ -353,7 +353,7 @@ def create_swapfile(root_mount_point, root_btrfs):
     zeroes = bytes(16384)
     with open(swapfile_path, "wb") as f:
         total = 0
-        desired_size = 512 * 1024 * 1024 * 4  # 2048MiB
+        desired_size = 512 * 1024 * 1024  # 512MiB
         while total < desired_size:
             chunk = f.write(zeroes)
             if chunk < 1:

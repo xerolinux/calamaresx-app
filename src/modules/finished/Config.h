@@ -105,13 +105,6 @@ public Q_SLOTS:
      */
     void onInstallationFailed( const QString& message, const QString& details );
 
-    /** @brief Open the installation log file
-     *
-     * Opens the installation.log file using the system's default
-     * application (typically a text editor).
-     */
-    Q_INVOKABLE void openLogFile();
-
 signals:
     void restartModeChanged( RestartMode m );
     void restartNowWantedChanged( bool w );

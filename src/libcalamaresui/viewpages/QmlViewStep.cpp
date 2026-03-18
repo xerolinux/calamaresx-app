@@ -25,6 +25,9 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWidget>
+#if QT_VERSION > QT_VERSION_CHECK( 6, 0, 0 )
+#include <QQuickWindow>
+#endif
 
 #include <QVBoxLayout>
 #include <QWidget>
@@ -184,10 +187,6 @@ QmlViewStep::loadComplete()
         }
         else
         {
-            // setContent() is public API, but not documented publicly.
-            // It is marked \internal in the Qt sources, but does exactly
-            // what is needed: sets up visual parent by replacing the root
-            // item, and handling resizes.
             m_qmlWidget->setContent( QUrl( m_qmlFileName ), m_qmlComponent, m_qmlObject );
             showQml();
         }

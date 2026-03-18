@@ -14,12 +14,7 @@
 #include "utils/Logger.h"
 #include "utils/Variant.h"
 
-#include <QDesktopServices>
-#include <QDir>
-#include <QFile>
 #include <QProcess>
-#include <QStandardPaths>
-#include <QUrl>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
@@ -232,37 +227,4 @@ Config::setConfigurationMap( const QVariantMap& configurationMap )
     }
 
     m_notifyOnFinished = Calamares::getBool( configurationMap, "notifyOnFinished", false );
-}
-
-void
-Config::openLogFile()
-{
-    // Try to find the installation log in common locations
-    QStringList logPaths = {
-        QDir::homePath() + "/installation.log",
-        "/var/log/installation.log",
-        QStandardPaths::writableLocation( QStandardPaths::TempLocation ) + "/calamares-installation.log",
-        "/tmp/calamares-installation.log"
-    };
-
-    for ( const QString& logPath : logPaths )
-    {
-        if ( QFile::exists( logPath ) )
-        {
-            cDebug() << "Opening log file:" << logPath;
-            QDesktopServices::openUrl( QUrl::fromLocalFile( logPath ) );
-            return;
-        }
-    }
-
-    // If no log file found, try to open the session log
-    QString sessionLog = Logger::logFile();
-    if ( !sessionLog.isEmpty() && QFile::exists( sessionLog ) )
-    {
-        cDebug() << "Opening session log file:" << sessionLog;
-        QDesktopServices::openUrl( QUrl::fromLocalFile( sessionLog ) );
-        return;
-    }
-
-    cWarning() << "No installation log file found in expected locations";
 }

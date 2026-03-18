@@ -163,7 +163,7 @@ class DesktopEnvironment:
 # /usr/local/bin) then the DE is assumed to be installed
 # and to use that .desktop filename.
 desktop_environments = [
-    DesktopEnvironment('/usr/bin/startplasma-x11', 'plasmax11'),  # KDE Plasma 6
+    DesktopEnvironment('/usr/bin/startplasma-x11', 'plasma'),  # KDE Plasma 5.17+
     DesktopEnvironment('/usr/bin/startkde', 'plasma'),  # KDE Plasma 5
     DesktopEnvironment('/usr/bin/startkde', 'kde-plasma'),  # KDE Plasma 4
     DesktopEnvironment(
@@ -376,14 +376,30 @@ class DMgdm(DisplayManager):
         GDM exists with different executable names, so search
         for one of them and use it.
         """
-        for executable, config in (
+        candidates = (
             ( "gdm", "etc/gdm/custom.conf" ),
-            ( "gdm3", "etc/gdm3/daemon.conf" )
-        ):
+            ( "gdm3", "etc/gdm3/daemon.conf" ),
+            ( "gdm3", "etc/gdm3/custom.conf" ),
+        )
+
+        def have_executable(executable : str):
             bin_path = "{!s}/usr/bin/{!s}".format(self.root_mount_point, executable)
             sbin_path = "{!s}/usr/sbin/{!s}".format(self.root_mount_point, executable)
-            if os.path.exists(bin_path) or os.path.exists(sbin_path):
-                # Keep the found-executable name around for later
+            return os.path.exists(bin_path) or os.path.exists(sbin_path)
+
+        def have_config(config : str):
+            config_path = "{!s}/{!s}".format(self.root_mount_point, config)
+            return os.path.exists(config_path)
+
+        # Look for an existing configuration file as a hint, then
+        # keep the found-executable name and config around for later.
+        for executable, config in candidates:
+            if have_config(config) and have_executable(executable):
+                self.executable = executable
+                self.config = config
+                return True
+        for executable, config in candidates:
+            if have_executable(executable):
                 self.executable = executable
                 self.config = config
                 return True
@@ -627,7 +643,7 @@ class DMlightdm(DisplayManager):
 
         libcalamares.utils.target_env_call(['passwd', '-l', 'lightdm'])
         libcalamares.utils.target_env_call(['chown', '-R', 'lightdm:lightdm', '/run/lightdm'])
-        libcalamares.utils.target_env_call(['chmod', '+r', '/etc/lightdm/lightdm.conf'])
+        libcalamares.utils.target_env_call(['chmod', '+r' '/etc/lightdm/lightdm.conf'])
 
     def desktop_environment_setup(self, default_desktop_environment):
         os.system(
@@ -648,8 +664,9 @@ class DMlightdm(DisplayManager):
         a .desktop file that specifies where the actual executable is. May return
         None to indicate nothing-was-found.
         """
-        for greeters_dir in ("usr/share/xgreeters", "usr/share/lightdm/greeters"):
+        for greeters_dir in ( "usr/share/xgreeters", "usr/share/lightdm/greeters", ):
             greeters_target_path = os.path.join(self.root_mount_point, greeters_dir)
+            available_names = []
             try:
                 available_names = os.listdir(greeters_target_path)
             except FileNotFoundError:
@@ -730,6 +747,53 @@ class DMslim(DisplayManager):
     def greeter_setup(self):
         pass
 
+class DMplasmalogin(DisplayManager):
+    name = "plasmalogin"
+    executable = "plasmalogin"
+
+    configuration_file = "/etc/plasmalogin.conf"
+
+    def set_autologin(self, username, do_autologin, default_desktop_environment):
+        import configparser
+
+        # Systems with plasmalogin as Desktop Manager
+        plasmalogin_conf_path = os.path.join(self.root_mount_point, self.configuration_file.lstrip('/'))
+
+        plasmalogin_config = configparser.ConfigParser(strict=False)
+        # Make everything case sensitive
+        plasmalogin_config.optionxform = str
+
+        if os.path.isfile(plasmalogin_conf_path):
+            plasmalogin_config.read(plasmalogin_conf_path)
+
+        if 'Autologin' not in plasmalogin_config:
+            plasmalogin_config.add_section('Autologin')
+
+        if do_autologin:
+            plasmalogin_config.set('Autologin', 'User', username)
+        elif plasmalogin_config.has_option('Autologin', 'User'):
+            plasmalogin_config.remove_option('Autologin', 'User')
+
+        if default_desktop_environment is not None:
+            plasmalogin_config.set(
+                'Autologin',
+                'Session',
+                default_desktop_environment.desktop_file
+                )
+
+        with open(plasmalogin_conf_path, 'w') as plasmalogin_config_file:
+            plasmalogin_config.write(plasmalogin_config_file, space_around_delimiters=False)
+
+
+    def basic_setup(self):
+        pass
+
+    def desktop_environment_setup(self, desktop_environment):
+        pass
+
+    def greeter_setup(self):
+        pass
+
 
 class DMsddm(DisplayManager):
     name = "sddm"
@@ -768,53 +832,6 @@ class DMsddm(DisplayManager):
         with open(sddm_conf_path, 'w') as sddm_config_file:
             sddm_config.write(sddm_config_file, space_around_delimiters=False)
 
-
-    def basic_setup(self):
-        pass
-
-    def desktop_environment_setup(self, desktop_environment):
-        pass
-
-    def greeter_setup(self):
-        pass
-
-
-class DMplasmalogin(DisplayManager):
-    name = "plasmalogin"
-    executable = "plasmalogin"
-
-    configuration_file = "/etc/plasmalogin.conf"
-
-    def set_autologin(self, username, do_autologin, default_desktop_environment):
-        import configparser
-
-        # Systems with plasmalogin as Display Manager
-        plasmalogin_conf_path = os.path.join(self.root_mount_point, self.configuration_file.lstrip('/'))
-
-        plasmalogin_config = configparser.ConfigParser(strict=False)
-        # Make everything case sensitive
-        plasmalogin_config.optionxform = str
-
-        if os.path.isfile(plasmalogin_conf_path):
-            plasmalogin_config.read(plasmalogin_conf_path)
-
-        if 'Autologin' not in plasmalogin_config:
-            plasmalogin_config.add_section('Autologin')
-
-        if do_autologin:
-            plasmalogin_config.set('Autologin', 'User', username)
-        elif plasmalogin_config.has_option('Autologin', 'User'):
-            plasmalogin_config.remove_option('Autologin', 'User')
-
-        if default_desktop_environment is not None:
-            plasmalogin_config.set(
-                'Autologin',
-                'Session',
-                default_desktop_environment.desktop_file
-                )
-
-        with open(plasmalogin_conf_path, 'w') as plasmalogin_config_file:
-            plasmalogin_config.write(plasmalogin_config_file, space_around_delimiters=False)
 
     def basic_setup(self):
         pass

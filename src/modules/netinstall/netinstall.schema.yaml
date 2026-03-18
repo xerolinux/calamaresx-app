@@ -13,13 +13,11 @@ definitions:
                 (e.g. `qt5-creator-dev`).
         -
             type: object
-            description: rich package - with a human-friendly display name, actual package name,
-                and description. If 'package' is not specified, 'name' is used for both display
-                and installation.
+            description: rich package - one with a package-name (for the package-manager) and
+                a description (for the human).
             properties:
-                name: { type: string, description: "Human-friendly display name (e.g. 'Brave Browser')" }
-                package: { type: string, description: "Actual package name for package manager (e.g. 'brave-bin')" }
-                description: { type: string, description: "Additional description shown to user" }
+                name: { type: string }
+                description: { type: string }
     group:
         type: object
         description: Longer discussion in `netinstall.conf` file under 'Groups Format'

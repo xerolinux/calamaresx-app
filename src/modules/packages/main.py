@@ -19,7 +19,7 @@ from string import Template
 import subprocess
 
 import libcalamares
-from libcalamares.utils import check_target_env_call, target_env_call
+from libcalamares.utils import check_target_env_call, target_env_call, target_env_process_output
 from libcalamares.utils import gettext_path, gettext_languages
 
 import gettext
@@ -252,7 +252,7 @@ class PMApk(PackageManager):
             check_target_env_call(["apk", "del", pkg])
 
     def update_db(self):
-        check_target_env_call(["apk", "update"])
+        target_env_process_output(["apk", "update"])
 
     def update_system(self):
         check_target_env_call(["apk", "upgrade", "--available"])
@@ -271,7 +271,7 @@ class PMApt(PackageManager):
                                "autoremove"])
 
     def update_db(self):
-        check_target_env_call(["apt-get", "update"])
+        target_env_process_output(["apt-get", "update"])
 
     def update_system(self):
         # Doesn't need to update the system explicitly
@@ -360,7 +360,7 @@ class PMEntropy(PackageManager):
         check_target_env_call(["equo", "rm"] + pkgs)
 
     def update_db(self):
-        check_target_env_call(["equo", "update"])
+        target_env_process_output(["equo", "update"])
 
     def update_system(self):
         # Doesn't need to update the system explicitly
@@ -411,7 +411,7 @@ class PMPackageKit(PackageManager):
             check_target_env_call(["pkcon", "-py", "remove", pkg])
 
     def update_db(self):
-        check_target_env_call(["pkcon", "refresh"])
+        target_env_process_output(["pkcon", "refresh"])
 
     def update_system(self):
         check_target_env_call(["pkcon", "-py", "update"])
@@ -486,7 +486,7 @@ class PMPacman(PackageManager):
         if from_local:
             command.append("-U")
         else:
-            command.append("-Syy")
+            command.append("-S")
 
         # Don't ask for user intervention, take the default action
         command.append("--noconfirm")
@@ -510,7 +510,7 @@ class PMPacman(PackageManager):
         self.run_pacman(["pacman", "-Rs", "--noconfirm"] + pkgs, True)
 
     def update_db(self):
-        self.run_pacman(["pacman", "-Syy"])
+        self.run_pacman(["pacman", "-Sy"])
 
     def update_system(self):
         command = ["pacman", "-Su", "--noconfirm"]
@@ -538,7 +538,7 @@ class PMPamac(PackageManager):
 
     def update_db(self):
         self.del_db_lock()
-        check_target_env_call([self.backend, "update", "--no-confirm"])
+        target_env_process_output([self.backend, "update", "--no-confirm"])
 
     def update_system(self):
         self.del_db_lock()
@@ -555,7 +555,7 @@ class PMPisi(PackageManager):
         check_target_env_call(["pisi", "remove", "-y"] + pkgs)
 
     def update_db(self):
-        check_target_env_call(["pisi", "update-repo"])
+        target_env_process_output(["pisi", "update-repo"])
 
     def update_system(self):
         # Doesn't need to update the system explicitly
@@ -573,7 +573,7 @@ class PMPortage(PackageManager):
         check_target_env_call(["emerge", "--depclean", "-q"])
 
     def update_db(self):
-        check_target_env_call(["emerge", "--sync"])
+        target_env_process_output(["emerge", "--sync"])
 
     def update_system(self):
         # Doesn't need to update the system explicitly
@@ -634,7 +634,7 @@ class PMZypp(PackageManager):
                                "remove"] + pkgs)
 
     def update_db(self):
-        check_target_env_call(["zypper", "--non-interactive", "update"])
+        target_env_process_output(["zypper", "--non-interactive", "update"])
 
     def update_system(self):
         # Doesn't need to update the system explicitly
@@ -765,7 +765,6 @@ def run():
         return None
 
     update_db = libcalamares.job.configuration.get("update_db", False)
-    ignore_update_db_error = libcalamares.job.configuration.get("ignore_update_db_error", False)
     if update_db and libcalamares.globalstorage.value("hasInternet"):
         try:
             pkgman.update_db()
@@ -773,8 +772,9 @@ def run():
             libcalamares.utils.warning(str(e))
             libcalamares.utils.debug("stdout:" + str(e.stdout))
             libcalamares.utils.debug("stderr:" + str(e.stderr))
-            if ignore_update_db_error:
-                libcalamares.utils.warning("Package database update failed, ignoring (ignore_update_db_error is set)")
+            ignore_cpe = libcalamares.job.configuration.get("ignore_update_db_error", False)
+            if ignore_cpe:
+                libcalamares.utils.warning("Ignoring package manager database update failure.")
             else:
                 return (_("Package Manager error"),
                         _("The package manager could not prepare updates. The command <pre>{!s}</pre> returned error code {!s}.")

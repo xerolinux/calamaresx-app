@@ -33,7 +33,7 @@ public:
 
 public Q_SLOTS:
     /**
-     * This asks the main window to grow to accommodate @p size pixels, to accommodate
+     * This asks the main window to grow to accomodate @p size pixels, to accomodate
      * larger-than-expected window contents. The enlargement may be silently
      * ignored.
      */

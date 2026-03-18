@@ -113,7 +113,6 @@ private:
     WaitingWidget* m_spinner = nullptr;
 
     QQuickWidget* m_qmlWidget = nullptr;
-
     QQmlEngine* m_qmlEngine = nullptr;  // Qt5: points to QuickWidget engine, Qt6: separate engine
     QQmlComponent* m_qmlComponent = nullptr;
     QQuickItem* m_qmlObject = nullptr;

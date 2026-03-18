@@ -37,8 +37,3 @@ properties:
         properties:
             configuration_file: { type: string }
         additionalProperties: false
-    plasmalogin:
-        type: object
-        properties:
-            configuration_file: { type: string }
-        additionalProperties: false

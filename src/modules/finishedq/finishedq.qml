@@ -1,7 +1,6 @@
 /* === This file is part of Calamares - <https://calamares.io> ===
  *
  *   SPDX-FileCopyrightText: 2021 Anke Boersma <demm@kaosx.us>
- *   SPDX-FileCopyrightText: 2024 XeroLinux <xerolinux@pm.me>
  *   SPDX-License-Identifier: GPL-3.0-or-later
  *   License-Filename: LICENSE
  *
@@ -20,156 +19,83 @@ import QtGraphicalEffects 1.0
 import QtQuick.Window 2.3
 
 Page {
+
     id: finished
 
     width: parent.width
     height: parent.height
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 20
-        width: Math.min(parent.width * 0.8, 600)
+    header: Kirigami.Heading {
+        width: parent.width
+        height: 100
+        id: header
+        Layout.fillWidth: true
+        horizontalAlignment: Qt.AlignHCenter
+        color: Kirigami.Theme.textColor
+        level: 1
+        text: qsTr("Installation Completed")
 
-        // Status Icon
-        Kirigami.Icon {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: 80
-            implicitHeight: 80
-            source: config.failed ? "dialog-error" : "dialog-ok-apply"
-            color: config.failed ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.positiveTextColor
-        }
-
-        // Title
-        Kirigami.Heading {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
+        Text {
+            anchors.top: header.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
-            level: 1
-            color: config.failed ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.textColor
-            text: config.failed
-                ? qsTr("Installation Failed")
-                : qsTr("Installation Completed")
+            font.pointSize: 12
+            text: qsTr("%1 has been installed on your computer.<br/>
+            You may now restart into your new system, or continue using the Live environment.").arg(Branding.string(Branding.ProductName))
         }
 
-        // Subtitle
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            color: Kirigami.Theme.textColor
-            text: config.failed
-                ? qsTr("%1 could not be installed. Please check the log for details.")
-                    .arg(Branding.string(Branding.ProductName))
-                : qsTr("%1 has been installed on your computer.")
-                    .arg(Branding.string(Branding.ProductName))
-        }
-
-        // Failure details box (only shown on failure with details)
-        Rectangle {
-            id: failureBox
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.maximumWidth: 500
-            Layout.preferredHeight: failureContent.implicitHeight + 24
-            visible: config.failed && (config.failureMessage !== "" || config.failureDetails !== "")
-            color: Qt.rgba(Kirigami.Theme.negativeTextColor.r,
-                          Kirigami.Theme.negativeTextColor.g,
-                          Kirigami.Theme.negativeTextColor.b, 0.1)
-            radius: 8
-            border.color: Kirigami.Theme.negativeTextColor
-            border.width: 1
-
-            ColumnLayout {
-                id: failureContent
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 8
-
-                Label {
-                    Layout.fillWidth: true
-                    text: config.failureMessage
-                    color: Kirigami.Theme.negativeTextColor
-                    font.bold: true
-                    wrapMode: Text.WordWrap
-                    visible: config.failureMessage !== ""
-                }
-
-                Label {
-                    Layout.fillWidth: true
-                    text: config.failureDetails
-                    color: Kirigami.Theme.textColor
-                    font.pointSize: 9
-                    wrapMode: Text.WordWrap
-                    visible: config.failureDetails !== ""
-                }
-            }
-        }
-
-        // Success message (only shown on success)
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            visible: !config.failed
-            color: Kirigami.Theme.disabledTextColor
-            text: qsTr("You may now restart into your new system, or continue using the Live environment.")
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 20
-        }
-
-        // Action buttons
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 12
-
-            Button {
-                id: logButton
-                text: qsTr("View Log")
-                icon.name: "document-open"
-                flat: !config.failed
-                highlighted: config.failed
-                onClicked: config.openLogFile()
-            }
-
-            Button {
-                id: closeButton
-                text: qsTr("Close Installer")
-                icon.name: "application-exit"
-                onClicked: ViewManager.quit()
-            }
-
-            Button {
-                id: restartButton
-                text: qsTr("Restart Now")
-                icon.name: "system-reboot"
-                visible: !config.failed
-                highlighted: true
-                onClicked: config.doRestart(true)
-            }
-        }
-
-        // Spacer
-        Item {
-            Layout.preferredHeight: 10
-        }
-
-        // Log file info
-        Label {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            font.pointSize: 9
-            color: Kirigami.Theme.disabledTextColor
-            text: qsTr("A full log is available at ~/installation.log and /var/log/installation.log")
+        Image {
+            source: "seedling.svg"
+            anchors.top: header.bottom
+            anchors.topMargin: 80
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 64
+            height: 64
+            mipmap: true
         }
     }
 
-    function onActivate() { }
-    function onLeave() { }
+    RowLayout {
+        Layout.alignment: Qt.AlignRight|Qt.AlignVCenter
+        anchors.centerIn: parent
+        spacing: 6
+
+        Button {
+            id: button
+            text: qsTr("Close Installer")
+            icon.name: "application-exit"
+            onClicked: { ViewManager.quit(); }
+        }
+
+        Button {
+            text: qsTr("Restart System")
+            icon.name: "system-reboot"
+            onClicked: { config.doRestart(true); }
+        }
+    }
+
+    Item {
+
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin : 100
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Text {
+            anchors.centerIn: parent
+            anchors.top: parent.top
+            horizontalAlignment: Text.AlignHCenter
+            text: qsTr("<p>A full log of the install is available as installation.log in the home directory of the Live user.<br/>
+            This log is copied to /var/log/installation.log of the target system.</p>")
+        }
+    }
+
+    function onActivate()
+    {
+    }
+
+    function onLeave()
+    {
+    }
 }

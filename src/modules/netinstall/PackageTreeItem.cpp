@@ -55,13 +55,8 @@ PackageTreeItem::PackageTreeItem( const QString& packageName, PackageTreeItem* p
 
 PackageTreeItem::PackageTreeItem( const QVariantMap& groupData, PackageTag&& parent )
     : m_parentItem( parent.parent )
-    // If "package" field exists, use it for actual package name; otherwise fall back to "name"
-    , m_packageName( groupData.contains( "package" )
-                         ? Calamares::getString( groupData, "package" )
-                         : Calamares::getString( groupData, "name" ) )
+    , m_packageName( Calamares::getString( groupData, "name" ) )
     , m_selected( parentCheckState( parent.parent ) )
-    // Use "name" as display name if present, otherwise use the package name
-    , m_name( groupData.contains( "name" ) ? Calamares::getString( groupData, "name" ) : m_packageName )
     , m_description( Calamares::getString( groupData, "description" ) )
     , m_isGroup( false )
     , m_isCritical( parent.parent ? parent.parent->isCritical() : false )
@@ -134,9 +129,8 @@ PackageTreeItem::data( int column ) const
     switch ( column )
     {
     case 0:
-        // For packages: use display name (m_name) if set, otherwise use packageName
-        // For groups: use name
-        return QVariant( isPackage() ? ( m_name.isEmpty() ? packageName() : name() ) : name() );
+        // packages have a packagename, groups don't
+        return QVariant( isPackage() ? packageName() : name() );
     case 1:
         // packages often have a blank description
         return QVariant( description() );
