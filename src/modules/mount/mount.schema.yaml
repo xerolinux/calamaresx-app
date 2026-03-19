@@ -26,6 +26,7 @@ properties:
             properties:
                 mountPoint: { type: string }
                 subvolume: { type: string }
+                mountOptions: { type: array, items: { type: string } }
             required: [ subvolume, mountPoint ]
     btrfsSwapSubvol: { type: string }
     mountOptions:

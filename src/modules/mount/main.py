@@ -306,6 +306,8 @@ def mount_partition(root_mount_point, partition, partitions, mount_options, moun
         for s in btrfs_subvolumes:
             if s['subvolume'] == swap_subvol:
                 mount_option_no_subvol = get_mount_options("btrfs_swap", mount_options, partition)
+            elif "mountOptions" in s:
+                mount_option_no_subvol = ",".join(s["mountOptions"])
             else:
                 mount_option_no_subvol = get_mount_options(fstype, mount_options, partition)
 

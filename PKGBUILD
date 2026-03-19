@@ -3,8 +3,8 @@
 
 pkgname=calamaresx-app
 _pkgname=calamares
-pkgver=3.4.2
-pkgrel=3
+pkgver=3.4.3
+pkgrel=2
 pkgdesc='Distribution-independent installer framework'
 arch=('x86_64')
 license=(GPL)
@@ -116,7 +116,6 @@ package() {
 	DESTDIR="${pkgdir}" cmake --build . --target install
 
 	# Install desktop file and polkit helper from repo root
-	install -Dm644 "$srcdir/$pkgname/calamares.desktop" "$pkgdir/etc/xdg/autostart/calamares.desktop"
 	install -Dm755 "$srcdir/$pkgname/calamares.desktop" "$pkgdir/home/liveuser/Desktop/calamares.desktop"
 	install -Dm755 "$srcdir/$pkgname/calamares_polkit" "$pkgdir/usr/bin/calamares_polkit"
 
