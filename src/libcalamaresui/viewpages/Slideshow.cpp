@@ -117,7 +117,7 @@ SlideshowQML::loadQmlV2Complete()
                 QUrl::fromLocalFile( Calamares::Branding::instance()->slideshowPath() ), m_qmlComponent, m_qmlObject );
             if ( isActive() )
             {
-                // We're alreay visible! Must have been slow QML loading, and we
+                // We're already visible! Must have been slow QML loading, and we
                 // passed onActivate already. changeSlideShowState() locks
                 // the same mutex: call changeSlideShowState() after l is dead.
                 QTimer::singleShot( 0, this, &SlideshowQML::startSlideShow );

@@ -82,7 +82,7 @@ def get_mount_options(filesystem, mount_options, partition, efi_location = None)
     :param mount_options: A list of dicts that descripes the mount options for each mountpoint
     :param partition: A dict containing information about the partition
     :param efi_location: A string holding the location of the EFI partition or None
-    :return: A comma seperated string containing the mount options suitable for passing to mount
+    :return: A comma separated string containing the mount options suitable for passing to mount
     """
 
     # Extra mounts can optionally have "options" set, in this case, they override other all other settings

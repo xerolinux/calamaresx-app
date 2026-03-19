@@ -365,7 +365,7 @@ PartitionJobTests::testResizePartition()
     qint64 newLast = newFirst + sectorsPerMiB * newSizeMiB - 1;
 
     // Make the test data file smaller than the full size of the partition to
-    // accomodate for the file system overhead
+    // accommodate for the file system overhead
     const unsigned long long minSizeMiB = qMin( oldSizeMiB, newSizeMiB );
     const QByteArray testData = generateTestData( Calamares::MiBtoBytes( minSizeMiB ) * 3 / 4 );
     const QString testName = "test.data";

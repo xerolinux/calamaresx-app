@@ -215,7 +215,7 @@ QmlViewStep::showQml()
 
     if ( ViewManager::instance()->currentStep() == this )
     {
-        // We're alreay visible! Must have been slow QML loading, and we
+        // We're already visible! Must have been slow QML loading, and we
         // passed onActivate already.
         changeQMLState( QMLAction::Start, m_qmlObject );
     }

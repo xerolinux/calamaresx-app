@@ -495,7 +495,7 @@ PartitionPage::onPartitionViewActivated()
 
     // Use the buttons to trigger the actions so that they do nothing if they
     // are disabled. Alternatively, the code could use QAction to centralize,
-    // but I don't expect there will be other occurences of triggering the same
+    // but I don't expect there will be other occurrences of triggering the same
     // action from multiple UI elements in this page, so it does not feel worth
     // the price.
     if ( Calamares::Partition::isPartitionFreeSpace( partition ) )

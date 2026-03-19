@@ -77,7 +77,7 @@ parts is improved:
    then that property is set to *true* when the slideshow becomes visible
    (activated) and is set to *false* when the slideshow is hidden (e.g.
    when the installation phase is done).
- - The *actvatedInCalamares* property can be used to set up timers also in V1.
+ - The *activatedInCalamares* property can be used to set up timers also in V1.
  - The keyboard shortcuts in the example slideshow are enabled only while
    the slideshow is visible.
 

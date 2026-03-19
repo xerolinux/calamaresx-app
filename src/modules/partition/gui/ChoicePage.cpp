@@ -151,7 +151,7 @@ ChoicePage::retranslate()
  * drawing itself is done by the delegate, which may end up drawing a
  * different width in the popup than in the collapsed combo box.
  *
- * Make the box wide enough to accomodate the whole expanded delegate;
+ * Make the box wide enough to accommodate the whole expanded delegate;
  * this avoids cases where the popup would truncate data being drawn
  * because the overall box is sized too narrow.
  */

@@ -10,7 +10,7 @@ Python3 script to scrape some data out of ICU CLDR supplemental data.
 
 To use this script, you must have downloaded the CLDR data, e.g.
 http://unicode.org/Public/cldr/35.1/, and extracted the zip file.
-Run the script from **inside** the common/ durectory that is created
+Run the script from **inside** the common/ directory that is created
 (or fix the hard-coded path).
 
 The script tries to print C++ code that compiles; if there are encoding
